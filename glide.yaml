@@ -1,0 +1,4 @@
+package: socket.io-server
+import:
+- package: github.com/golang/glog
+- package: github.com/googollee/go-socket.io

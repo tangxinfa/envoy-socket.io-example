@@ -1,0 +1,83 @@
+{
+  "listeners": [
+    {
+      "address": "tcp://127.0.0.1:9001",
+      "filters": [
+        {
+          "type": "read",
+          "name": "http_connection_manager",
+          "config": {
+            "codec_type": "auto",
+            "add_user_agent": true,
+            "idle_timeout_s": 840,
+            "access_log": [
+              {
+                "path": "/var/log/envoy/egress_http-websocket.log"
+              }
+            ],
+            "stat_prefix": "egress_http",
+            "use_remote_address": true,
+            "route_config": {
+              "virtual_hosts": [
+                {
+                  "name": "websocket",
+                  "domains": [
+                    "*"
+                  ],
+                  "routes": [
+                    {
+                      "prefix": "/socket.io/",
+                      "cluster": "websocket",
+                      "use_websocket": true
+                    },
+                    {
+                      "prefix": "/",
+                      "cluster": "http"
+                    }
+                  ]
+                }
+              ]
+            },
+            "filters": [
+              {
+                "type": "decoder",
+                "name": "router",
+                "config": {}
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "admin": {
+    "access_log_path": "/var/log/envoy/websocket-admin_access.log",
+    "address": "tcp://0.0.0.0:9901"
+  },
+  "cluster_manager": {
+    "clusters": [
+      {
+        "name": "websocket",
+        "type": "logical_dns",
+        "lb_type": "round_robin",
+        "connect_timeout_ms": 250,
+        "hosts": [
+          {
+            "url": "tcp://127.0.0.1:8001"
+          }
+        ]
+      },
+      {
+        "name": "http",
+        "type": "logical_dns",
+        "lb_type": "round_robin",
+        "connect_timeout_ms": 250,
+        "hosts": [
+          {
+            "url": "tcp://127.0.0.1:8001"
+          }
+        ]
+      }
+    ]
+  }
+}
