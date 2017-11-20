@@ -4,7 +4,7 @@ Require latest version of envoy which applied the merge request [#2070](https://
 
 ## Build ##
 
-    go get https://github.com/tangxinfa/envoy-socket.io-example
+    go get github.com/tangxinfa/envoy-socket.io-example
     cd $GOPATH/src/github.com/tangxinfa/envoy-socket.io-example
     glide install
     go build
@@ -15,6 +15,5 @@ Require latest version of envoy which applied the merge request [#2070](https://
     envoy --config-path ./envoy.json
 
 
-Open <http://localhost:9001> with browser, if socket.io connected to server a welcome message will received,
-input something the server will echo back.
-
+Open <http://localhost:9001> with browser, if socket.io connected to server a welcome message will arrive,
+you can send something, the server will echo back.
