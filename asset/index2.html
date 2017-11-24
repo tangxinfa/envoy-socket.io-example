@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+     * { margin: 0; padding: 0; box-sizing: border-box; }
+     body { font: 13px Helvetica, Arial; }
+     form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+     form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+     form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+     #messages { list-style-type: none; margin: 0; padding: 0; }
+     #messages li { padding: 5px 10px; }
+     #messages li:nth-child(odd) { background: #eee; }
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <form action="">
+      <input id="m" autocomplete="off" /><button>Send</button>
+    </form>
+    <script src="/socket.io.js"></script>
+    <script src="/jquery.js"></script>
+    <script>
+     function getParameterByName(name, url) {
+         if (!url) url = window.location.href;
+         name = name.replace(/[\[\]]/g, "\\$&");
+         var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+             results = regex.exec(url);
+         if (!results) return null;
+         if (!results[2]) return '';
+         return decodeURIComponent(results[2].replace(/\+/g, " "));
+     }
+     function uuidv4() {
+         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+             var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+             return v.toString(16);
+         });
+     }
+     if (!getParameterByName("client_id")) {
+         var search = "client_id=" + uuidv4();
+         if (document.location.search && document.location.search != "?") {
+             search = "&" + search;
+         } else {
+             search = "?" + search;
+         }
+         document.location.search = search;
+     }
+     var socket = io({
+         transports: ['websocket', 'polling']
+     });
+     socket.on('message', function(msg){
+         $('#messages').append($('<li>').text(msg));
+     });
+     $('form').submit(function(){
+         socket.emit('message', $('#m').val());
+         $('#m').val('');
+         return false;
+     });
+    </script>
+  </body>
+</html>

@@ -79,13 +79,14 @@ func (c *SocketioClient) Send(res string) error {
 }
 
 type SocketioServer struct {
+	addr       string
 	server     *socketio.Server
 	clients    map[string]*SocketioClient
 	clientsMut sync.RWMutex
 }
 
-func NewSocketioServer() (*SocketioServer, error) {
-	s := &SocketioServer{clients: map[string]*SocketioClient{}}
+func NewSocketioServer(addr string) (*SocketioServer, error) {
+	s := &SocketioServer{addr: addr, clients: map[string]*SocketioClient{}}
 	var err error
 	s.server, err = socketio.NewServer(nil)
 	if err != nil {
@@ -133,15 +134,16 @@ func (s *SocketioServer) DelClient(client *SocketioClient) {
 }
 
 func (s *SocketioServer) Run() error {
-	glog.Infof("socketio server running at localhost:8001 ...")
-	return http.ListenAndServe(":8001", nil)
+	glog.Infof("socketio server running at %s ...", s.addr)
+	return http.ListenAndServe(s.addr, nil)
 }
 
 func main() {
+	addr := flag.String("addr", "localhost:8001", "listen addr")
 	flag.Parse()
 
 	glog.Infof("socketio server init ...")
-	server, err := NewSocketioServer()
+	server, err := NewSocketioServer(*addr)
 	if err != nil {
 		glog.Fatalf("socketio server init error: %s", err)
 	}

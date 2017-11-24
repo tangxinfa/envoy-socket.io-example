@@ -1,7 +1,7 @@
 {
   "listeners": [
     {
-      "address": "tcp://127.0.0.1:9001",
+      "address": "tcp://127.0.0.1:9002",
       "filters": [
         {
           "type": "read",
@@ -12,7 +12,7 @@
             "idle_timeout_s": 840,
             "access_log": [
               {
-                "path": "/var/log/envoy/egress_http-socketio1.log"
+                "path": "/var/log/envoy/egress_http-socketio2.log"
               }
             ],
             "stat_prefix": "egress_http",
@@ -20,15 +20,18 @@
             "route_config": {
               "virtual_hosts": [
                 {
-                  "name": "socketio1",
+                  "name": "socketio2",
                   "domains": [
                     "*"
                   ],
                   "routes": [
                     {
                       "prefix": "/",
-                      "cluster": "socketio1",
-                      "use_websocket": true
+                      "cluster": "socketio2",
+                      "use_websocket": true,
+                      "hash_policy": {
+                        "header_name": "referrer"
+                      }
                     }
                   ]
                 }
@@ -47,19 +50,25 @@
     }
   ],
   "admin": {
-    "access_log_path": "/var/log/envoy/socketio1-admin_access.log",
-    "address": "tcp://0.0.0.0:9901"
+    "access_log_path": "/var/log/envoy/socketio2-admin_access.log",
+    "address": "tcp://0.0.0.0:9902"
   },
   "cluster_manager": {
     "clusters": [
       {
-        "name": "socketio1",
-        "type": "logical_dns",
-        "lb_type": "round_robin",
+        "name": "socketio2",
+        "type": "static",
+        "lb_type": "ring_hash",
         "connect_timeout_ms": 250,
         "hosts": [
           {
-            "url": "tcp://127.0.0.1:8001"
+            "url": "tcp://127.0.0.1:8002"
+          },
+          {
+            "url": "tcp://127.0.0.1:8003"
+          },
+          {
+            "url": "tcp://127.0.0.1:8004"
           }
         ]
       }
