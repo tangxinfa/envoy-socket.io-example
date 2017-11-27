@@ -14,7 +14,7 @@ NOTE: Require latest version of envoy which applied the merge request [#2070](ht
 ### Single service node ###
 
     ./envoy-socket.io-example -addr 127.0.0.1:8001 -logtostderr &
-    envoy --base-id 2 --config-path ./envoy.json
+    envoy --base-id 1 --config-path ./envoy.json
 
 Open <http://localhost:9001/index.html> in your favorite browser, 
 if socket.io connected to server a welcome message will arrive,
